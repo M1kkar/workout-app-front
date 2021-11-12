@@ -8,13 +8,13 @@
     <div class="log-cont">
       <div class="register-form">
         <form>
-          <input type="text" placeholder="E-Mail">
-          <input type="password" placeholder="Password">
-          <input type="password" placeholder="Confirm Password">
-          <input type="text" placeholder="Name">
-          <input type="text" placeholder="Surname">
+          <input v-model="registerForm.email" type="text" placeholder="E-Mail">
+          <input v-model="registerForm.password" type="password" placeholder="Password">
+          <input v-model="registerForm.retype" type="password" placeholder="Confirm Password">
+          <input v-model="registerForm.name" type="text" placeholder="Name">
+          <input v-model="registerForm.surname" type="text" placeholder="Surname">
 
-          <input type="submit" value="Stwórz konto">
+          <input type="submit" value="Stwórz konto" v-on:click="register()">
         </form>
       </div>
 
@@ -25,8 +25,30 @@
 </template>
 
 <script>
+import axios from "axios";
+import endpoint from "../endpoint.json";
+import {required ,sameAs, minLength} from "vuelidate/lib/validators"
+
 export default {
   name: "Register",
+
+  data() {
+    return {
+      registerForm: {
+        email: '',
+        password: '',
+        name: '',
+        surname: '',
+      }
+    }
+  },
+  validations: {
+    registerForm: {
+      password: {required, min: minLength(5)},
+      retype: {sameAsPassword: sameAs('password')}
+    }
+  },
+
 
   methods:{
     changeRoute(route) {
@@ -36,8 +58,22 @@ export default {
         }
       });
     },
+
+    register(){
+      axios.post(`${endpoint.url}/register`, this.registerForm, {
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+      .then((response)=>{
+        if(response.status===200){
+          console.log("i tak nie dziala");
+        }
+      })
+    }
   }
 }
+
 
 </script>
 

@@ -8,10 +8,10 @@
   <div class="log-cont">
     <div class="login-form">
       <form>
-        <input type="text" placeholder="E-Mail">
-        <input type="password" placeholder="Password">
+        <input v-model="loginForm.email" type="text" placeholder="E-Mail">
+        <input v-model="loginForm.password" type="password" placeholder="Password">
 
-        <input type="submit" value="Zaloguj Się!">
+        <input type="submit" value="Zaloguj Się!" v-on:click="login">
       </form>
     </div>
 
@@ -22,8 +22,20 @@
 </template>
 
 <script>
+import axios from "axios";
+import endpoint from "../endpoint.json";
+
 export default {
   name: "Login",
+
+  data(){
+    return{
+      loginForm:{
+        email:'',
+        password:'',
+      },
+    }
+  },
 
   methods:{
     changeRoute(route) {
@@ -33,6 +45,17 @@ export default {
         }
       });
     },
+    login(){
+      axios.post(`${endpoint.url}/login`, this.loginForm)
+           .then((response)=>{
+             if(response.status===200){
+               console.log(this.loginForm);
+               this.$router.push('/dashboard');
+
+             }
+           })
+    }
+
   }
 }
 
