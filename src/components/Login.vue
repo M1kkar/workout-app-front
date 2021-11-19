@@ -1,24 +1,34 @@
 <template>
-<div class="container">
-  <div class="header">
-    <a v-on:click="changeRoute('/')"><h2 class="logo"><span style="color: #C1A65F">BEST</span> WORKOUT</h2></a>
-
-    <a v-on:click="changeRoute('/login')"><button class="loginButton"> <p>LOGIN</p> </button></a>
-  </div>
-  <div class="log-cont">
-    <div class="login-form">
-      <form>
-        <input v-model="loginForm.email" type="text" placeholder="E-Mail">
-        <input v-model="loginForm.password" type="password" placeholder="Password">
-
-        <input type="submit" value="Zaloguj Się!" v-on:click="login">
-      </form>
+  <div class="flexbox-container">
+    <div class="header">
+      <a v-on:click="changeRoute('/')">
+      <div class="logo">
+        <a ><h2><span style="color: #C1A65F">BEST</span> WORKOUT</h2></a>
+      </div>
+      </a>
+      <div class="login-button-div">
+        <a  v-on:click="changeRoute('/login')"><button class="login-button">Zaloguj sie</button></a>
+      </div>
     </div>
 
-  </div>
+    <div class="log-cont">
+      <div class="login-form">
+        <form>
+          <div class="input1">
+            <input  v-model="loginForm.email" type="text"  class="login-input" placeholder="E-mail"/>
+          </div>
+          <div class="input2">
+            <input v-model="loginForm.password" type="text" class="login-input" placeholder="Password"/>
+          </div>
 
-  <my-footer/>
-</div>
+          <button v-on:click="login" class="log-button" type="button"> Log in </button>
+
+        </form>
+
+      </div>
+    </div>
+    <my-footer></my-footer>
+  </div>
 </template>
 
 <script>
@@ -47,13 +57,13 @@ export default {
     },
     login(){
       axios.post(`${endpoint.url}/login`, this.loginForm)
-           .then((response)=>{
-             if(response.status===200){
-               console.log(this.loginForm);
-               this.$router.push('/dashboard');
+          .then((response)=>{
+            if(response.status===200){
+              console.log(this.loginForm);
+              this.$router.push('/dashboard');
 
-             }
-           })
+            }
+          })
     }
 
   }
@@ -61,49 +71,89 @@ export default {
 
 </script>
 
+
 <style>
-.log-cont{
-  background-color: #EBE8E8;
-  height: 800px;
-  text-align: center;
+.flexbox-container {
+
+  max-width: 1600px;
+  display: flex;
+  flex-direction: column;
+  margin-right: auto;
+  margin-left: auto;
+
 }
 
-.login-form{
-  position:absolute;
+.header {
+  background: #ffffff;
+  min-height: 64px;
+  border-bottom: 1px dotted black;
+  border-top: 1px dotted black;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
 
-  width: 300px;
-  height: 140px;
-  top:300px;
-  left:770px;
-  padding:30px;
+.logo {
+  padding-left: 30px;
+  max-width: 250px;
+  font-family: lex;
+  cursor: pointer;
+}
+
+.login-button-div {
+  padding-right: 60px;
+  padding-top: 20px;
+}
+
+.login-button {
+  font-family: lex;
+  background-color: black;
+  border-radius: 8px;
+  transition: all .1s ease-in-out;
+  cursor: pointer;
+  border: solid 3px black;
+  color: white;
+  min-height: 30px;
+}
+
+.login-button:hover {
+  background-color: #C1A65F;
+  border-color: #000000;
+  transition: all .1s ease-in-out;
+}
+
+.log-cont{
+  background-color: #EBE8E8;
+  min-height: 672px ;
+  display: flex;
+  justify-content: center;
+}
+.login-form{
+  max-width: 350px;
+  height: 170px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin: auto;
   background-color: #d9d9d9;
   border-radius: 5px;
   -webkit-box-shadow: 1px 3px 45px -22px rgba(66, 68, 90, 1);
   -moz-box-shadow: 1px 3px 45px -22px rgba(66, 68, 90, 1);
   box-shadow: 1px 3px 45px -22px rgba(66, 68, 90, 1);
+
 }
 
-input[type="text"],
-input[type="password"]{
-  width: 300px;
-  height: 30px;
+.login-input{
+  padding: 10px 60px;
   border: 2px solid #ddd;
   border-radius: 8px;
   text-align: center;
   box-sizing: border-box;
-  padding:10px;
-  margin-top: 15px;
-
 }
-input[type="text"]:focus,
-input[type="password"]:focus{
-    background-color: #efefef;
-}
-
-input[type="submit"]{
+.log-button{
   width: 150px;
   height: 30px;
-  border: 2px solid #ddd;
   background-color: black;
   font-family: lex;
   color: #FFFFFF;
@@ -111,13 +161,18 @@ input[type="submit"]{
   border-radius: 8px;
   cursor: pointer;
   transition: all .1s ease-in-out;
-  margin-top: 15px;
+
 }
-input[type="submit"]:hover{
+
+.log-button:hover{
   background-color: #C1A65F;
   border-color: #000000;
   transition: all .1s ease-in-out;
 }
 
+.input1, .input2 {
+
+  padding: 10px;
+}
 
 </style>

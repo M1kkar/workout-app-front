@@ -11,7 +11,6 @@
   height: 64px;
   width: 100%;
   background-color: black;
-
   text-align: center;
 
 
