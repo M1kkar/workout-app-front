@@ -32,6 +32,21 @@ const routes = [
         path: '/dashboard',
         name: '/dashboard',
         component:() =>import('../components/Dashboard'),
+    },
+    {
+        path: '/myDiet',
+        name: '/myDiet',
+        component:() =>import('../components/MyDiet')
+    },
+    {
+        path: '/myProfile',
+        name: '/myProfile',
+        component:() =>import('../components/MyProfile')
+    },
+    {
+        path: '/myTraining',
+        name: '/myTraining',
+        component:() =>import('../components/MyTraining')
     }
 ];
 
