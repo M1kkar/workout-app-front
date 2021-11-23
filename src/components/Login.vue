@@ -80,6 +80,10 @@ export default {
   flex-direction: column;
   margin-right: auto;
   margin-left: auto;
+  -webkit-box-shadow: 1px 3px 45px -22px rgba(66, 68, 90, 1);
+  -moz-box-shadow: 1px 3px 45px -22px rgba(66, 68, 90, 1);
+  box-shadow: 1px 3px 45px -22px rgba(66, 68, 90, 1);
+
 
 }
 
