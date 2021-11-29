@@ -1,49 +1,21 @@
 <template>
   <div class="flexbox-container">
-    <div class="header">
-      <div class="logo">
-        <a v-on:click="changeRoute('/dashboard')"><h2><span style="color: #C1A65F">BEST</span> WORKOUT</h2></a>
-      </div>
-      <div class="header_menu">
-        <ul>
-
-          <a v-on:click="changeRoute('/myTraining')">
-            <li>Trening</li>
-          </a>
-
-          <a v-on:click="changeRoute('/myDiet')">
-            <li>Dieta</li>
-          </a>
-
-          <a v-on:click="changeRoute('/myProfile')">
-            <li>Mój Profil</li>
-          </a>
-
-          <a v-on:click="changeRoute('/')">
-            <li ><img src="../images/logout1.png"/></li>
-          </a>
-        </ul>
-      </div>
-    </div>
+    <my-header></my-header>
     <my-footer></my-footer>
   </div>
 </template>
 
 <script>
 import Footer from "./Footer";
+import Header from "./Header";
 export default {
+  //TODO  w tej formatce poza tym żeby ją skończyć, zrobić formularz w którym użytkownik poda Kalorie, i makroskładniki zwalidować je po stronie frontu tak żeby suma makrosładników zgadzała sie z kcal
+
+
   components:{
     'my-footer': Footer,
+    'my-header' : Header,
   },
-  methods:{
-    changeRoute(route) {
-      this.$router.push(route).catch(error => {
-        if(error.name !== "NavigationDuplicated"){
-          throw error;
-        }
-      });
-    },
-  }
 
 }
 </script>

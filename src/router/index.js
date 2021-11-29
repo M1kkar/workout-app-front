@@ -9,44 +9,65 @@ Vue.use(VueRouter);
 Vue.component('my-home-page', HomePage);
 Vue.component('my-footer', Footer);
 Vue.component('login', Login);
-Vue.component('register', Register)
+Vue.component('register', Register);
 
+const loggedInGuard = (to, from, next) => {
+    if (sessionStorage.getItem('loggedIn')) {
+        next();
+    } else {
+        next('/');
+    }
+};
+const notLoggedInGuard = (to, from, next) => {
+    if (sessionStorage.getItem('loggedIn')) {
+        next('/login');
+    } else {
+        next();
+    }
+};
 
 const routes = [
     {
         path: '/',
         name: 'homepage',
         component: () => import('../components/HomePage'),
+        beforeEnter: notLoggedInGuard,
     },
     {
         path: '/login',
-        name: '/login',
+        name: 'login',
         component:() => import('../components/Login'),
+        beforeEnter: notLoggedInGuard,
     },
     {
       path: '/register',
-      name: '/register' ,
+      name: 'register' ,
       component:() =>import('../components/Register'),
+        beforeEnter: notLoggedInGuard
     },
     {
         path: '/dashboard',
-        name: '/dashboard',
+        name: 'dashboard',
         component:() =>import('../components/Dashboard'),
+        beforeEnter: loggedInGuard,
     },
     {
         path: '/myDiet',
-        name: '/myDiet',
-        component:() =>import('../components/MyDiet')
+        name: 'myDiet',
+        component:() =>import('../components/MyDiet'),
+        beforeEnter: loggedInGuard,
     },
     {
         path: '/myProfile',
-        name: '/myProfile',
-        component:() =>import('../components/MyProfile')
+        name: 'myProfile',
+        component:() =>import('../components/MyProfile'),
+        beforeEnter: loggedInGuard,
     },
     {
         path: '/myTraining',
-        name: '/myTraining',
-        component:() =>import('../components/MyTraining')
+        name: 'myTraining',
+        component:() =>import('../components/MyTraining'),
+        beforeEnter: loggedInGuard,
     }
 ];
 

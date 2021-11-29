@@ -22,6 +22,7 @@
         </form>
         <button v-on:click="register" class="register-button" type="button">Stwórz konto</button>
       </div>
+
     </div>
     <my-footer/>
   </div>
@@ -30,7 +31,7 @@
 <script>
 import axios from "axios";
 import endpoint from "../endpoint.json";
-import {required ,sameAs, minLength} from "vuelidate/lib/validators"
+import {required ,sameAs, minLength, email} from "vuelidate/lib/validators"
 
 export default {
   name: "Register",
@@ -38,15 +39,18 @@ export default {
   data() {
     return {
       registerForm: {
-        email: '',
-        password: '',
         name: '',
-        surname: '',
+        surname:'',
+        email: '',
+        password: null,
       }
     }
   },
   validations: {
     registerForm: {
+      name: {required},
+      surname: {required},
+      email: {required, email},
       password: {required, min: minLength(5)},
       retype: {sameAsPassword: sameAs('password')}
     }
@@ -61,18 +65,27 @@ export default {
         }
       });
     },
-    //TODO zrobić walidację rejestracji puki co działa na wszystko co sie wpisze
-    register(){
-      axios.post(`${endpoint.url}/register`, this.registerForm, {
-        headers: {
-          "Content-Type": "application/json"
-        }
-      })
-          .then((response)=>{
-            if(response.status===200){
-              this.$router.push("/");
-            }
-          })
+    register() {
+      this.$v.registerForm.$touch();
+      if (this.$v.registerForm.$error) {
+        this.$swal('Coś poszło nie tak !', 'Upewnij się, że dobrze uzupełniłeś wszystkie pola', 'error');
+      } else {
+        axios.post(`${endpoint.url}/register`, this.registerForm, {
+          headers: {
+            "Content-Type": "application/json"
+          }
+        })
+            .then((response) => {
+              if (response.status === 200) {
+                this.$swal({
+                  title:'Konto zostało utworzone',
+                  icon: 'success',
+                })
+
+                this.$router.push("/");
+              }
+            })
+      }
     }
   }
 }
@@ -81,6 +94,8 @@ export default {
 </script>
 
 <style>
+
+
 .flexbox-container {
 
   max-width: 1600px;

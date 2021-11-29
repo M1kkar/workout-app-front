@@ -1,43 +1,19 @@
 <template>
   <div class="flexbox-container">
-    <div class="header">
-      <div class="logo">
-        <a v-on:click="changeRoute('/dashboard')"><h2><span style="color: #C1A65F">BEST</span> WORKOUT</h2></a>
-      </div>
-      <div class="header_menu">
-        <ul>
-
-          <a v-on:click="changeRoute('/myTraining')">
-            <li>Trening</li>
-          </a>
-
-          <a v-on:click="changeRoute('/myDiet')">
-            <li>Dieta</li>
-          </a>
-
-          <a v-on:click="changeRoute('/myProfile')">
-            <li>Mój Profil</li>
-          </a>
-
-          <a v-on:click="changeRoute('/')">
-            <li><img src="../images/logout1.png"/></li>
-          </a>
-        </ul>
-      </div>
-    </div>
+    <my-header></my-header>
     <div class="user-data-content-div">
       <div class="user-data-div">
         <h3>DANE <span style="color: #000000">OSOBOWE</span></h3>
         <div class="name-surname-input-div">
-          <input type="text" class="name-input" placeholder="Imię"/>
-          <input type="text" class="surname-input" placeholder="Nazwisko"/>
+          <input v-model="dataFromSession.name" type="text" class="name-input" />
+          <input v-model="dataFromSession.surname" type="text" class="surname-input" />
         </div>
         <div class="name-surname-input-div">
-          <input type="password" class="password-input" placeholder="Hasło"/>
-          <input type="password" class="password-confirm-input" placeholder="Hasło"/>
+          <input v-on:input="log($event.target.value, $event.target.name)" type="password" class="password-input" placeholder="Hasło"/>
+          <input v-model="password1" type="password" class="password-confirm-input" placeholder="Hasło"/>
         </div>
         <div class="change-button-div">
-          <button class="login-button">Aktualizuj</button>
+          <a v-on:click="changePassword(dataFromSession.email)"><button class="login-button">Aktualizuj</button></a>
         </div>
       </div>
     </div>
@@ -49,17 +25,18 @@
           <img src="../images/bodyMeasurement.png"/>
         </div>
         <div class="body-measurement-form-div">
-          1: <input type="text" class="name-input" placeholder="Wzrost"/>
-          2: <input type="text" class="name-input" placeholder="Biceps"/>
-          3: <input type="text" class="name-input" placeholder="Klatka"/>
-          4: <input type="text" class="name-input" placeholder="Talia"/>
-          5: <input type="text" class="name-input" placeholder="Biodra"/>
-          6: <input type="text" class="name-input" placeholder="Udo"/>
+          1 <input v-model="measurementForm.height" type="text" class="name-input" placeholder="Wzrost"/>
+          2 <input v-model="measurementForm.biceps" type="text" class="name-input" placeholder="Biceps"/>
+          3 <input v-model="measurementForm.chest" type="text" class="name-input" placeholder="Klatka"/>
+          4 <input v-model="measurementForm.waist" type="text" class="name-input" placeholder="Talia"/>
+          5 <input v-model="measurementForm.hips" type="text" class="name-input" placeholder="Biodra"/>
+          6 <input v-model="measurementForm.thigh" type="text" class="name-input" placeholder="Udo"/>
+          7 <input v-model="measurementForm.weight" type="text" class="name-input" placeholder="Waga"/>
         </div>
 
       </div>
       <div class="body-measurement-button-div">
-        <button class="login-button">Aktualizuj</button>
+        <a @click="changePassword(dataFromSession.email)"><button class="login-button">Aktualizuj</button></a>
       </div>
     </div>
 
@@ -69,12 +46,51 @@
 
 <script>
 import Footer from "./Footer";
+import axios from "axios";
+import endpoint from "../endpoint.json";
+import Header from "./Header";
 
 export default {
   components: {
     'my-footer': Footer,
+    'my-header': Header,
+  },
+  data() {
+    return {
+      measurementForm: [],
+
+      userDataForm:{
+        name:'',
+        surname:'',
+        password:''
+
+      },
+      password1:'',
+      dataFromSession:[],
+
+    }
+  },
+  mounted() {
+    this.getDataToMyProfile();
+
   },
   methods: {
+    getDataToMyProfile(){
+      this.dataFromSession = JSON.parse(sessionStorage.getItem('loggedIn'));
+      console.log(this.dataFromSession);
+
+      axios.get(`${endpoint.url}/myProfile/all/?email=${this.dataFromSession.email}`)
+      .then((response)=>{
+        if(response.status===200){
+          console.log("pobrałochybadane");
+          this.measurementForm = response.data;
+          console.log(this.measurementForm);
+
+
+        }
+      })
+    },
+
     changeRoute(route) {
       this.$router.push(route).catch(error => {
         if (error.name !== "NavigationDuplicated") {
@@ -82,8 +98,18 @@ export default {
         }
       });
     },
+    changePassword(email){
+      axios.put(`${endpoint.url}/myProfile/${email}/${this.userDataForm.password}`)
+      .then((response) =>{
+        if(response.status===200){
+          console.log("pswd change work");
+        }
+      })
+    },
+    log(item) {
+      this.userDataForm.password = item ;
+    }
   }
-
 }
 </script>
 

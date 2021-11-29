@@ -1,30 +1,6 @@
 <template>
   <div class="flexbox-container">
-    <div class="header">
-      <div class="logo">
-        <a v-on:click="changeRoute('/dashboard')"><h2><span style="color: #C1A65F">BEST</span> WORKOUT</h2></a>
-      </div>
-      <div class="header_menu">
-         <ul>
-
-           <a v-on:click="changeRoute('/myTraining')">
-           <li>Trening</li>
-           </a>
-
-           <a v-on:click="changeRoute('/myDiet')">
-           <li>Dieta</li>
-           </a>
-
-           <a v-on:click="changeRoute('/myProfile')">
-           <li>Mój Profil</li>
-           </a>
-
-           <a v-on:click="changeRoute('/')">
-           <li ><img src="../images/logout1.png"/></li>
-           </a>
-         </ul>
-      </div>
-    </div>
+   <my-header/>
     <div class="first-content">
       <div class="first-content-inf">
         <div class="first-content-text-div">
@@ -62,20 +38,22 @@
 
 <script>
 import Footer from "./Footer";
+import Header from "./Header";
 export default {
-  components:{
+  components: {
     'my-footer': Footer,
+    'my-header': Header,
   },
-  methods:{
+
+  methods: {
     changeRoute(route) {
       this.$router.push(route).catch(error => {
-        if(error.name !== "NavigationDuplicated"){
+        if (error.name !== "NavigationDuplicated") {
           throw error;
         }
       });
-    },
+    }
   }
-
 }
 </script>
 
@@ -87,40 +65,6 @@ export default {
   flex-direction: column;
   margin-right: auto;
   margin-left: auto;
-
-}
-.header {
-  background: #ffffff;
-  min-height: 64px;
-  border-bottom: 1px dotted black;
-  border-top: 1px dotted black;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-
-
-}
-.header ul{
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-  list-style-type: none;
-  align-items: center;
-
-}
-.header ul li{
-  padding: 0 50px;
-  font-family: lex;
-  color: #C1A65F;
-  font-size: 14px;
-}
-
-.header a{
-  cursor: pointer;
-}
-
-.header_menu{
-  max-width: 900px;
 
 }
 

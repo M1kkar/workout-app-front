@@ -18,7 +18,7 @@
             <input  v-model="loginForm.email" type="text"  class="login-input" placeholder="E-mail"/>
           </div>
           <div class="input2">
-            <input v-model="loginForm.password" type="text" class="login-input" placeholder="Password"/>
+            <input v-model="loginForm.password" type="password" class="login-input" placeholder="Password"/>
           </div>
 
           <button v-on:click="login" class="log-button" type="button"> Log in </button>
@@ -59,11 +59,13 @@ export default {
       axios.post(`${endpoint.url}/login`, this.loginForm)
           .then((response)=>{
             if(response.status===200){
-              console.log(this.loginForm);
+              sessionStorage.setItem('loggedIn', JSON.stringify(response.data))
               this.$router.push('/dashboard');
 
             }
-          })
+          }).catch(()=>{
+            this.$swal('Ops..', 'Złe dane', 'error');
+      })
     }
 
   }
