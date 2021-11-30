@@ -74,8 +74,7 @@ export default {
           headers: {
             "Content-Type": "application/json"
           }
-        })
-            .then((response) => {
+        }).then((response) => {
               if (response.status === 200) {
                 this.$swal({
                   title:'Konto zostało utworzone',
@@ -84,8 +83,10 @@ export default {
 
                 this.$router.push("/");
               }
-            })
-      }
+            }).catch(()=>{
+            this.$swal('Coś poszło nie tak !', 'Użytkownik o taki E-mailu istenieje', 'error');
+          })
+        }
     }
   }
 }

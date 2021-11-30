@@ -2,12 +2,14 @@
   <div class="flexbox-container">
     <div class="header">
       <a v-on:click="changeRoute('/')">
-      <div class="logo">
-        <a ><h2><span style="color: #C1A65F">BEST</span> WORKOUT</h2></a>
-      </div>
+        <div class="logo">
+          <a><h2><span style="color: #C1A65F">BEST</span> WORKOUT</h2></a>
+        </div>
       </a>
       <div class="login-button-div">
-        <a  v-on:click="changeRoute('/login')"><button class="login-button">Zaloguj sie</button></a>
+        <a v-on:click="changeRoute('/login')">
+          <button class="login-button">Zaloguj sie</button>
+        </a>
       </div>
     </div>
 
@@ -15,13 +17,13 @@
       <div class="login-form">
         <form>
           <div class="input1">
-            <input  v-model="loginForm.email" type="text"  class="login-input" placeholder="E-mail"/>
+            <input v-model="loginForm.email" type="text" class="login-input" placeholder="E-mail"/>
           </div>
           <div class="input2">
             <input v-model="loginForm.password" type="password" class="login-input" placeholder="Password"/>
           </div>
 
-          <button v-on:click="login" class="log-button" type="button"> Log in </button>
+          <button v-on:click="login" class="log-button" type="button"> Log in</button>
 
         </form>
 
@@ -34,38 +36,53 @@
 <script>
 import axios from "axios";
 import endpoint from "../endpoint.json";
+import {email, required} from "vuelidate/lib/validators";
 
 export default {
   name: "Login",
 
-  data(){
-    return{
-      loginForm:{
-        email:'',
-        password:'',
+  data() {
+    return {
+      loginForm: {
+        email: '',
+        password: '',
       },
+
+
+    }
+  },
+  validations: {
+    loginForm: {
+      email: {required, email},
+      password: {required},
     }
   },
 
-  methods:{
+
+  methods: {
     changeRoute(route) {
       this.$router.push(route).catch(error => {
-        if(error.name !== "NavigationDuplicated"){
+        if (error.name !== "NavigationDuplicated") {
           throw error;
         }
       });
     },
-    login(){
-      axios.post(`${endpoint.url}/login`, this.loginForm)
-          .then((response)=>{
-            if(response.status===200){
-              sessionStorage.setItem('loggedIn', JSON.stringify(response.data))
-              this.$router.push('/dashboard');
+    login() {
+      this.$v.loginForm.$touch();
+      if (this.$v.loginForm.$error) {
+        this.$swal('Ops..', 'Złe dane', 'error');
+      } else {
+        axios.post(`${endpoint.url}/login`, this.loginForm)
+            .then((response) => {
+              if (response.status === 200) {
+                sessionStorage.setItem('loggedIn', JSON.stringify(response.data))
+                this.$router.push('/dashboard');
 
-            }
-          }).catch(()=>{
-            this.$swal('Ops..', 'Złe dane', 'error');
-      })
+              }
+            }).catch(() => {
+          this.$swal('Ops..', 'Złe dane', 'error');
+        })
+      }
     }
 
   }
@@ -128,13 +145,14 @@ export default {
   transition: all .1s ease-in-out;
 }
 
-.log-cont{
+.log-cont {
   background-color: #EBE8E8;
-  min-height: 672px ;
+  min-height: 672px;
   display: flex;
   justify-content: center;
 }
-.login-form{
+
+.login-form {
   max-width: 350px;
   height: 170px;
   display: flex;
@@ -150,14 +168,15 @@ export default {
 
 }
 
-.login-input{
+.login-input {
   padding: 10px 60px;
   border: 2px solid #ddd;
   border-radius: 8px;
   text-align: center;
   box-sizing: border-box;
 }
-.log-button{
+
+.log-button {
   width: 150px;
   height: 30px;
   background-color: black;
@@ -170,7 +189,7 @@ export default {
 
 }
 
-.log-button:hover{
+.log-button:hover {
   background-color: #C1A65F;
   border-color: #000000;
   transition: all .1s ease-in-out;

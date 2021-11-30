@@ -5,15 +5,18 @@
       <div class="user-data-div">
         <h3>DANE <span style="color: #000000">OSOBOWE</span></h3>
         <div class="name-surname-input-div">
-          <input v-model="dataFromSession.name" type="text" class="name-input" />
-          <input v-model="dataFromSession.surname" type="text" class="surname-input" />
+          <input v-model="dataFromSession.name" type="text" class="name-input" disabled/>
+          <input v-model="dataFromSession.surname" type="text" class="surname-input" disabled/>
         </div>
         <div class="name-surname-input-div">
-          <input v-on:input="log($event.target.value, $event.target.name)" type="password" class="password-input" placeholder="Hasło"/>
+          <input v-on:input="log($event.target.value, $event.target.name)" type="password" class="password-input"
+                 placeholder="Hasło"/>
           <input v-model="password1" type="password" class="password-confirm-input" placeholder="Hasło"/>
         </div>
         <div class="change-button-div">
-          <a v-on:click="changePassword(dataFromSession.email)"><button class="login-button">Aktualizuj</button></a>
+          <a v-on:click="changePassword(dataFromSession.email)">
+            <button class="login-button">Aktualizuj</button>
+          </a>
         </div>
       </div>
     </div>
@@ -25,18 +28,20 @@
           <img src="../images/bodyMeasurement.png"/>
         </div>
         <div class="body-measurement-form-div">
-          1 <input v-model="measurementForm.height" type="text" class="name-input" placeholder="Wzrost"/>
-          2 <input v-model="measurementForm.biceps" type="text" class="name-input" placeholder="Biceps"/>
-          3 <input v-model="measurementForm.chest" type="text" class="name-input" placeholder="Klatka"/>
-          4 <input v-model="measurementForm.waist" type="text" class="name-input" placeholder="Talia"/>
-          5 <input v-model="measurementForm.hips" type="text" class="name-input" placeholder="Biodra"/>
-          6 <input v-model="measurementForm.thigh" type="text" class="name-input" placeholder="Udo"/>
-          7 <input v-model="measurementForm.weight" type="text" class="name-input" placeholder="Waga"/>
+          1 Wzrost: <input v-model="measurementForm.height" type="text" class="name-input" placeholder="Wzrost"/>
+          2 Biceps: <input v-model="measurementForm.biceps" type="text" class="name-input" placeholder="Biceps"/>
+          3 Klatka: <input v-model="measurementForm.chest" type="text" class="name-input" placeholder="Klatka"/>
+          4 Talia: <input v-model="measurementForm.waist" type="text" class="name-input" placeholder="Talia"/>
+          5 Biodra: <input v-model="measurementForm.hips" type="text" class="name-input" placeholder="Biodra"/>
+          6 Udo: <input v-model="measurementForm.thigh" type="text" class="name-input" placeholder="Udo"/>
+          7 Waga: <input v-model="measurementForm.weight" type="text" class="name-input" placeholder="Waga"/>
         </div>
 
       </div>
       <div class="body-measurement-button-div">
-        <a @click="changePassword(dataFromSession.email)"><button class="login-button">Aktualizuj</button></a>
+        <a v-on:click="updateBodyMeasurement()">
+          <button class="login-button">Aktualizuj</button>
+        </a>
       </div>
     </div>
 
@@ -49,6 +54,8 @@ import Footer from "./Footer";
 import axios from "axios";
 import endpoint from "../endpoint.json";
 import Header from "./Header";
+import {required} from "vuelidate/lib/validators"
+
 
 export default {
   components: {
@@ -57,38 +64,79 @@ export default {
   },
   data() {
     return {
-      measurementForm: [],
-
-      userDataForm:{
-        name:'',
-        surname:'',
-        password:''
+      measurementForm: {
+        biceps: '',
+        height: '',
+        chest: '',
+        waist: '',
+        hips: '',
+        thigh: '',
+        weight: ''
 
       },
-      password1:'',
-      dataFromSession:[],
+
+      userDataForm: {
+        name: '',
+        surname: '',
+        password: ''
+
+      },
+      password1: '',
+      password: '',
+      dataFromSession: [],
+
 
     }
   },
+
+  validations:{
+    measurementForm:{
+      biceps: {required},
+      height: {required},
+      chest: {required},
+      waist: {required},
+      hips: {required},
+      thigh: {required},
+      weight: {required}
+
+    }
+  },
+
   mounted() {
     this.getDataToMyProfile();
 
   },
   methods: {
-    getDataToMyProfile(){
+
+
+    getDataToMyProfile() {
       this.dataFromSession = JSON.parse(sessionStorage.getItem('loggedIn'));
       console.log(this.dataFromSession);
 
-      axios.get(`${endpoint.url}/myProfile/all/?email=${this.dataFromSession.email}`)
-      .then((response)=>{
-        if(response.status===200){
-          console.log("pobrałochybadane");
-          this.measurementForm = response.data;
-          console.log(this.measurementForm);
+      axios.post(`${endpoint.url}/myProfile`, this.dataFromSession)
+          .then((response) => {
+            if (response.status === 200) {
+              this.measurementForm = response.data.bodyMeasurements;
+              console.log(this.measurementForm);
+            }
+          })
 
+    },
 
-        }
-      })
+    updateBodyMeasurement() {
+      this.$v.measurementForm.$touch();
+      if(this.$v.measurementForm.$error){
+        this.$swal('Ups..', 'Upewnij się ze wypełniłeś wszystkie pola!', 'error')
+      }
+      else{
+      console.log(this.measurementForm);
+      axios.post(`${endpoint.url}/myProfile/updateProfile/`, this.measurementForm)
+          .then((response) => {
+            if (response.status === 200) {
+              this.$swal('Udało się ..!', 'Pomiary zostały zaktualizowane', 'success')
+            }
+          })
+      }
     },
 
     changeRoute(route) {
@@ -98,16 +146,17 @@ export default {
         }
       });
     },
-    changePassword(email){
+
+    changePassword(email) {
       axios.put(`${endpoint.url}/myProfile/${email}/${this.userDataForm.password}`)
-      .then((response) =>{
-        if(response.status===200){
-          console.log("pswd change work");
-        }
-      })
+          .then((response) => {
+            if (response.status === 200) {
+              this.$swal('Udało się..', 'Hasło zostało zmienione', 'success')
+            }
+          })
     },
     log(item) {
-      this.userDataForm.password = item ;
+      this.userDataForm.password = item;
     }
   }
 }
@@ -161,7 +210,8 @@ export default {
 
 
 }
-.body-measurement-div{
+
+.body-measurement-div {
   display: flex;
   justify-content: space-between;
   flex-direction: row;
@@ -183,20 +233,21 @@ export default {
   max-width: 220px;
   font-family: lex;
   margin-left: 350px;
+  font-size: 12px;
 
 }
 
 .body-measurement-form-div input {
-  padding: 8px 30px;
+  padding: 8px 41px;
   border: 1px solid #000000;
   border-radius: 8px;
   max-width: 48%;
-  margin: 0 10px 30px;
+  margin: 0 10px 9px;
   text-align: center;
 
 }
 
-.body-measurement-button-div{
+.body-measurement-button-div {
   margin-top: 40px;
 }
 
