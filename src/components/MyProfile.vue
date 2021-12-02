@@ -28,13 +28,13 @@
           <img src="../images/bodyMeasurement.png"/>
         </div>
         <div class="body-measurement-form-div">
-          1 Wzrost: <input v-model="measurementForm.height" type="text" class="name-input" placeholder="Wzrost"/>
-          2 Biceps: <input v-model="measurementForm.biceps" type="text" class="name-input" placeholder="Biceps"/>
-          3 Klatka: <input v-model="measurementForm.chest" type="text" class="name-input" placeholder="Klatka"/>
-          4 Talia: <input v-model="measurementForm.waist" type="text" class="name-input" placeholder="Talia"/>
-          5 Biodra: <input v-model="measurementForm.hips" type="text" class="name-input" placeholder="Biodra"/>
-          6 Udo: <input v-model="measurementForm.thigh" type="text" class="name-input" placeholder="Udo"/>
-          7 Waga: <input v-model="measurementForm.weight" type="text" class="name-input" placeholder="Waga"/>
+          1 Wzrost<span style="color:#C1A65F">(cm):</span> <input v-model="measurementForm.height" type="text" class="name-input" placeholder="Wzrost"/>
+          2 Biceps<span style="color:#C1A65F">(cm):</span> <input v-model="measurementForm.biceps" type="text" class="name-input" placeholder="Biceps"/>
+          3 Klatka<span style="color:#C1A65F">(cm):</span> <input v-model="measurementForm.chest" type="text" class="name-input" placeholder="Klatka"/>
+          4 Talia<span style="color:#C1A65F">(cm):</span><input v-model="measurementForm.waist" type="text" class="name-input" placeholder="Talia"/>
+          5 Biodra<span style="color:#C1A65F">(cm):</span> <input v-model="measurementForm.hips" type="text" class="name-input" placeholder="Biodra"/>
+          6 Udo<span style="color:#C1A65F">(cm):</span> <input v-model="measurementForm.thigh" type="text" class="name-input" placeholder="Udo"/>
+          7 Waga<span style="color:#C1A65F">(kg):</span> <input v-model="measurementForm.weight" type="text" class="name-input" placeholder="Waga"/>
         </div>
 
       </div>
@@ -107,17 +107,14 @@ export default {
 
   },
   methods: {
-
-
     getDataToMyProfile() {
       this.dataFromSession = JSON.parse(sessionStorage.getItem('loggedIn'));
-      console.log(this.dataFromSession);
 
       axios.post(`${endpoint.url}/myProfile`, this.dataFromSession)
           .then((response) => {
             if (response.status === 200) {
               this.measurementForm = response.data.bodyMeasurements;
-              console.log(this.measurementForm);
+
             }
           })
 
@@ -129,7 +126,7 @@ export default {
         this.$swal('Ups..', 'Upewnij się ze wypełniłeś wszystkie pola!', 'error')
       }
       else{
-      console.log(this.measurementForm);
+      // console.log(this.measurementForm);
       axios.post(`${endpoint.url}/myProfile/updateProfile/`, this.measurementForm)
           .then((response) => {
             if (response.status === 200) {

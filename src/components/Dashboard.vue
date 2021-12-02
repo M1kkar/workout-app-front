@@ -5,10 +5,10 @@
       <div class="first-content-inf">
         <div class="first-content-text-div">
           <div class="content-text">
-            <p>STWÓRZ SWÓJ PLAN</p>
+            <p>DODAJ SWÓJ TRENING</p>
           </div>
           <div class="content-button">
-            <a v-on:click="changeRoute('/myTraining')"><button class="reg-button"><p>STWÓRZ PLAN</p></button></a>
+            <a v-on:click="changeRoute('/myTraining')"><button class="reg-button"><p>DODAJ TRENING</p></button></a>
           </div>
         </div>
 

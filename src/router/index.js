@@ -68,7 +68,20 @@ const routes = [
         name: 'myTraining',
         component:() =>import('../components/MyTraining'),
         beforeEnter: loggedInGuard,
+    },
+    {
+        path: '/allExercises',
+        name: '/allExercises',
+        component:() =>import('../components/Exercises'),
+        beforeEnter: loggedInGuard,
+    },
+    {
+        path: '/aboutTraining',
+        name: '/aboutTraining',
+        component:() =>import('../components/AboutTraining'),
     }
+
+
 ];
 
 const router = new VueRouter({

@@ -1,6 +1,6 @@
 <template>
   <div class="flexbox-container">
-    <div class="header">
+    <div class="headerMain">
       <a v-on:click="changeRoute('/')">
         <div class="logo">
           <a><h2><span style="color: #C1A65F">BEST</span> WORKOUT</h2></a>
@@ -106,11 +106,11 @@ export default {
 
 }
 
-.header {
+.headerMain {
   background: #ffffff;
   min-height: 64px;
-  border-bottom: 1px dotted black;
-  border-top: 1px dotted black;
+/*  border-bottom: 1px dotted black;
+  border-top: 1px dotted black;*/
   display: flex;
   flex-direction: row;
   justify-content: space-between;
