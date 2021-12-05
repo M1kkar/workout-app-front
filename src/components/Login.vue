@@ -77,7 +77,6 @@ export default {
               if (response.status === 200) {
                 sessionStorage.setItem('loggedIn', JSON.stringify(response.data))
                 this.$router.push('/dashboard');
-
               }
             }).catch(() => {
           this.$swal('Ops..', 'Złe dane', 'error');
@@ -92,6 +91,14 @@ export default {
 
 
 <style>
+
+.swal2-title{
+  font-family: 'lex' !important;
+}
+.swal2-html-container{
+  font-family: 'lex' !important;
+  font-size: 12px !important;
+}
 .flexbox-container {
 
   max-width: 1600px;

@@ -37,7 +37,7 @@
           <i class="fa fa-caret-down"></i>
         </button>
         <div class="dropdown-content">
-          <a v-on:click="changeRoute('/myTraining')" >Moje Trening</a>
+          <a v-on:click="changeRoute('/myTraining')" >Moje Treningi</a>
           <a v-on:click="changeRoute('/allExercises')">Ćwiczenia</a>
           <a v-on:click="changeRoute('/aboutTraining')">O Treningu</a>
         </div>

@@ -12,7 +12,7 @@
     <div class="basic-inf">
       <div class="basic-inf-inside">
         <div class="welcome-text">
-          <p>Witaj w miejscu gdzie będziesz mógł ułożyć swój własny plan, i kontrolować dietę</p>
+          <p>Witaj w miejscu gdzie będziesz mógł śledzić swój każdy trening, i kontrolować dietę</p>
         </div>
         <div class="reg-inf">
           <p>Jeśli nie masz konta stwórz je tutaj</p>
@@ -40,8 +40,8 @@
           <img src="../images/file1.png"/>
         </div>
         <div class="text1">
-          <p style="text-align: center ">WŁASNY PLAN</p>
-          <p style="text-align: center ">Stworzysz tu własny plan, oraz będziesz mógł dodawać postępy w każdym ćwiczeniu</p>
+          <p style="text-align: center ">ŚLEDŹ TRENINGI</p>
+          <p style="text-align: center ">Zapisuj i śledź każdy swój trening </p>
         </div>
       </div>
 

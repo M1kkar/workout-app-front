@@ -161,6 +161,14 @@ export default {
 
 
 <style>
+
+.swal2-title{
+  font-family: 'lex' !important;
+}
+.swal2-html-container{
+  font-family: 'lex' !important;
+  font-size: 12px !important;
+}
 .user-data-content-div {
   min-height: 672px;
   display: flex;

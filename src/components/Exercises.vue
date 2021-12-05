@@ -185,7 +185,9 @@ export default {
 
 .table tbody tr.active-row {
   font-weight: bold;
-  color: #959896;
+  color: black;
 }
 
 </style>
+
+
