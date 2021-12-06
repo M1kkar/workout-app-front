@@ -17,27 +17,35 @@
           <tbody>
             <tr v-for="(training,i) in workoutDays" v-bind:key="i">
               <td>{{i+1}}</td>
-              <td>{{training.trainingName}}</td>
+              <a v-on:click="openDeleteForm"> <td>{{training.trainingName}}</td></a>
               <td>{{training.dateOfTraining}}</td>
+
             </tr>
+
           </tbody>
         </table>
       </div>
       <button v-on:click="openForm()" class="register-button">DODAJ TRENING</button>
     </div>
     <div class="my-popup" id="my-form">
-        <form class="form-container">
+      <form class="form-container">
             <h3>Wprowadź dane: </h3>
 
             <label>Data: </label>
-            <input v-model="workoutToSaveForm.date" type="date" required>
+            <input v-model="workoutToSaveForm.dateOfTraining" type="date" required>
             <label>Nazwa: </label>
-            <input v-model="workoutToSaveForm.name" type="text" required>
+            <input v-model="workoutToSaveForm.trainingName" type="text" required>
             <button v-on:click="sendForm()" class="register-button">Zapisz</button>
             <button v-on:click="closeForm()" class="register-button">Anuluj</button>
-
-        </form>
+      </form>
     </div>
+      <div class="second-popup" id="my-second-form">
+
+        <form class="delete-form">
+          <button v-on:click="deleteTraining()" class="register-button">Usun trening</button>
+        </form>
+
+      </div>
     <div class="div-with-instruction">
       <div class="instruction">
         <h3>1. Dodaj Swój dzień <span style="color: #C1A65F">Treningowy</span></h3>
@@ -73,8 +81,8 @@ export default {
 
       workoutDays:[],
       workoutToSaveForm:{
-        name:'',
-        date:'',
+        trainingName:'',
+        dateOfTraining:'',
       },
 
 
@@ -83,8 +91,8 @@ export default {
   },
   validations: {
     workoutToSaveForm:{
-      name:{required},
-      date:{required},
+      trainingName:{required},
+      dateOfTraining:{required},
     }
 
   },
@@ -106,19 +114,20 @@ export default {
       document.getElementById("my-form").style.display = "block";
     },
     sendForm(){
+
+      const workoutUserData = {
+        userData: this.dataFromSession = JSON.parse(sessionStorage.getItem('loggedIn')),
+        workoutData: this.workoutToSaveForm,
+      }
+
       this.$v.workoutToSaveForm.$touch();
       if(this.$v.workoutToSaveForm.$error){
         console.log("pola");
-      }else{
-        const workoutUserData = {
-          userData: this.dataFromSession,
-          workoutData: this.workoutToSaveForm,
-        }
+      }else {
         axios.post(`${endpoint.url}/myTraining/addWorkoutDay`, workoutUserData)
-            .then((response)=>{
-              if(response.status===200){
-                console.log(workoutUserData.workoutData);
-                console.log(workoutUserData.userData);
+            .then((response) => {
+              if (response.status === 200) {
+                document.getElementById("my-form").style.display = "none";
               }
             })
 
@@ -127,7 +136,11 @@ export default {
 
     closeForm(){
       document.getElementById("my-form").style.display = "none";
-    }
+    },
+
+    openDeleteForm(){
+      document.getElementById("my-second-form").style.display = "block";
+    },
 
   }
 
@@ -211,6 +224,8 @@ export default {
   max-width: 350px;
 }
 
+
+
 .my-popup{
   display: none;
   position: fixed;
@@ -229,5 +244,19 @@ export default {
   margin: 5px 0 22px 0;
 }
 
+.second-popup{
+  display: none;
+  position: fixed;
+  border: 3px solid #f1f1f1;
+  margin-top: 150px;
+
+}
+
+.delete-form{
+  max-width: 300px;
+  padding: 10px;
+  background-color: white;
+  text-align: center;
+}
 
 </style>
