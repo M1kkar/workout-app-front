@@ -23,7 +23,7 @@
             <div class="option">Triceps</div>
           </a>
           <a v-on:click="getExercises('Brzuch')">
-            <div class="option">Brzuch</div>
+            <div class="optionL">Brzuch</div>
           </a>
         </nav>
       </div>
