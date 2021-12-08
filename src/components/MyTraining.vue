@@ -18,7 +18,7 @@
             <tbody>
             <tr v-for="(training,i) in workoutDays" v-bind:key="i">
               <td>{{ i + 1 }}</td>
-              <td>{{ training.trainingName }}</td>
+              <a v-on:click="openAddPopup(training.trainingName)"><td>{{ training.trainingName }}</td></a>
               <td>{{ training.dateOfTraining }}</td>
             </tr>
 
@@ -60,6 +60,27 @@
         </form>
 
       </div>
+      <div class="third-popup" id="my-third-popup">
+        <form class="select-popup">
+          <h3> Dodaj cwiczenia do treningu </h3>
+          <h3><span style="color:white;">{{this.workoutDays.trainingName}}</span></h3>
+          <h3>Wybierz Cwiczenie i wpisz dane</h3>
+          <div class="custom-select">
+            <select name="exercises" v-model="exerciseName">
+              <option v-for="(exercise, i) in allNames" v-bind:key="i">
+                {{exercise}}
+              </option>
+            </select>
+            <div class="ex-inputs">Liczba serii: <input  v-model="dataToAddExercise.numberOfSeries"  type="text"></div>
+            <div class="ex-inputs">Liczba powtórzeń: <input v-model="dataToAddExercise.numberOfRepetitions" type="text"></div>
+            <div class="ex-inputs">Obciążenie: <input v-model="dataToAddExercise.weight" type="text"></div>
+          </div>
+
+          <button v-on:click="addExercise()" class="register-button">Dodaj Cwiczenie</button>
+          <button v-on:click="closeAddPopup()" class="register-button">Anuluj</button>
+
+        </form>
+      </div>
       <div class="div-with-instruction">
         <div class="instruction">
           <h3>1. Dodaj Swój dzień <span style="color: #C1A65F">Treningowy</span></h3>
@@ -96,17 +117,20 @@ export default {
   data() {
     return {
       dataFromSession: [],
-
+      allNames: [],
       workoutDays: [],
       workoutToSaveForm: {
         trainingName: '',
         dateOfTraining: '',
       },
-
       selectedOption: '',
+      exerciseName: '',
 
-      testValue: false,
-
+      dataToAddExercise: {
+        numberOfSeries: '',
+        numberOfRepetitions: '',
+        weight: '',
+      }
 
     }
   },
@@ -152,7 +176,7 @@ export default {
                 console.log("xd");
               }
             }).catch(() => {
-          this.$swal('Ops.. Coś poszło nie tak', 'Nazwa treningu musi byc różna', 'error');
+
         })
 
       }
@@ -187,14 +211,58 @@ export default {
 
 
     closeDeleteForm() {
-      /*document.getElementById("my-second-form").style.display = "none";*/
       var popup = document.getElementById("my-second-form");
       popup.classList.remove('show');
-    }
+    },
+
+
+    getAllExercises(trainingName) {
+      this.workoutDays.trainingName = trainingName;
+      console.log(trainingName);
+      axios.post(`${endpoint.url}/exercises/all`)
+          .then((response) => {
+            if (response.status === 200) {
+              this.allNames = response.data;
+            }
+          }).catch(() => {
+        this.$swal("Eror", "", "error");
+      })
+    },
+
+    openAddPopup(trainingName) {
+      this.workoutDays.trainingName = trainingName;
+      var popup = document.getElementById("my-third-popup")
+      popup.classList.add('show');
+      this.getAllExercises(trainingName);
+
+    },
+    closeAddPopup() {
+      var popup = document.getElementById("my-third-popup")
+      popup.classList.remove('show');
+    },
+
+    addExercise() {
+        const full = {
+        trainingName: this.workoutDays.trainingName,
+        exerciseName: this.exerciseName,
+        planOfExercises: this.dataToAddExercise,
+        user: this.dataFromSession = JSON.parse(sessionStorage.getItem('loggedIn')),
+      }
+
+      axios.post(`${endpoint.url}/exercises/addExercises`, full)
+      .then((response)=>{
+        if(response.status===200){
+          console.log("its works")
+        }
+      }).catch(()=>{
+        console.log("nie works");
+      })
+
+    },
 
   }
-
 }
+
 </script>
 
 <style scoped>
@@ -336,6 +404,25 @@ export default {
   font-family: lex;
   padding: 10px;
 }
+
+.third-popup {
+  width: 600px;
+  visibility: hidden;
+  position: fixed;
+  border: 3px solid black;
+  margin-top: 150px;
+  background-color: #a2a2a2;
+  opacity: 0;
+  transition: all 0.3s ease-in-out;
+  transform: scale(1.3);
+  text-align: center;
+
+}
+
+.third-popup select{
+  width: 430px;
+}
+
 
 .show{
   visibility: visible;

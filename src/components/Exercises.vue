@@ -82,7 +82,7 @@ export default {
       });
     },
     getExercises(name) {
-      axios.post(`${endpoint.url}/exercises/all?name=${name}`)
+      axios.post(`${endpoint.url}/exercises/allByCategory?name=${name}`)
           .then((response) => {
             if (response.status === 200) {
               this.allExercises = response.data;
