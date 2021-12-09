@@ -24,10 +24,14 @@
 
             </tbody>
           </table>
+
+        </div>
+        <div class="more-inf">
+          <h5 v-on:click="changeRoute('/moreDetails')">Więcej szczegółów</h5>
         </div>
         <div class="buttons">
-          <button v-on:click="openForm()" class="register-button">DODAJ TRENING</button>
-          <button v-on:click="openDeleteForm()" class="register-button"> USUŃ TRENING</button>
+          <div><button v-on:click="openForm()" class="register-button">DODAJ TRENING</button></div>
+          <div><button v-on:click="openDeleteForm()" class="register-button"> USUŃ TRENING</button></div>
         </div>
       </div>
       <div class="my-popup" id="my-form">
@@ -38,6 +42,7 @@
           <input v-model="workoutToSaveForm.dateOfTraining" type="date" required>
           <label>Nazwa: </label>
           <input v-model="workoutToSaveForm.trainingName" type="text" required>
+          <h6>maxymalna długosc nazwy to 10 znaków</h6>
           <button v-on:click="sendForm()" class="register-button">Zapisz</button>
           <button v-on:click="closeForm()" class="register-button">Anuluj</button>
         </form>
@@ -102,7 +107,7 @@ import Header from "./Header";
 import axios from "axios";
 import endpoint from "../endpoint.json";
 import '@sweetalert2/theme-minimal/minimal.css'
-import {required} from "vuelidate/lib/validators"
+import {required, maxLength} from "vuelidate/lib/validators"
 
 export default {
 
@@ -136,7 +141,7 @@ export default {
   },
   validations: {
     workoutToSaveForm: {
-      trainingName: {required},
+      trainingName: {required, max: maxLength(10)},
       dateOfTraining: {required},
     }
 
@@ -259,6 +264,14 @@ export default {
       })
 
     },
+    changeRoute(route) {
+      this.$router.push(route).catch(error => {
+        if (error.name !== "NavigationDuplicated") {
+          throw error;
+        }
+      });
+
+    },
 
   }
 }
@@ -304,6 +317,16 @@ export default {
   overflow-y: auto;
 }
 
+.more-inf{
+  text-align: center;
+}
+
+.more-inf h5{
+  cursor: pointer;
+  text-decoration: underline;
+  color: #9a8d0f;
+}
+
 .table thead tr {
   background-color: #ababab;
   color: #000000;
@@ -338,6 +361,8 @@ export default {
 
 .buttons {
   text-align: center;
+  display: flex;
+  justify-content: space-around;
 }
 
 .buttons .register-button {
@@ -373,7 +398,7 @@ export default {
 
 .form-container input {
   width: 90%;
-  padding: 15px;
+  padding: 10px;
   margin: 5px 0 22px 0;
 }
 

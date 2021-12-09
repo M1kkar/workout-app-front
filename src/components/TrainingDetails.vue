@@ -1,29 +1,11 @@
 <template>
-  <div class="flexbox-container">
-    <my-header/>
-    <div class="exercise-content-div">
+<div class="flexbox-container">
+  <my-header></my-header>
+    <div class="centre-div">
       <div class="category-menu">
-        <nav class="left-side-menu">
-          <a v-on:click="getExercises('Klatka')">
-            <div class="option">Klatka Piersiowa</div>
-          </a>
-          <a v-on:click="getExercises('Plecy')">
-            <div class="option">Plecy</div>
-          </a>
-          <a v-on:click="getExercises('Nogi')">
-            <div class="option">Nogi</div>
-          </a>
-          <a v-on:click="getExercises('Barki')">
-            <div class="option">Barki</div>
-          </a>
-          <a v-on:click="getExercises('Biceps')">
-            <div class="option">Biceps</div>
-          </a>
-          <a v-on:click="getExercises('Triceps')">
-            <div class="option">Triceps</div>
-          </a>
-          <a v-on:click="getExercises('Brzuch')">
-            <div class="optionL">Brzuch</div>
+        <nav class="left-side-menu" v-for="(training,i) in workoutDays" v-bind:key="i">
+          <a v-on:click="getPlan(training.trainingName)">
+            <div class="option">{{training.trainingName}}</div>
           </a>
         </nav>
       </div>
@@ -34,22 +16,29 @@
             <tr>
               <th>Pozycja</th>
               <th>Nazwa Ćwiczenia</th>
+              <th>Liczba serii</th>
+              <th>Liczba powtórzeń</th>
+              <th>Obciążenie(kg)</th>
+              <th></th>
             </tr>
             </thead>
             <tbody>
-            <tr v-for="(exercise,i) in allExercises" v-bind:key="i" class="active-row">
-              <td>{{ i + 1 }}</td>
-              <td>{{ exercise }}</td>
+            <tr v-for="(exercise, i) in exercises" v-bind:key="i">
+              <td>{{i+1}}</td>
+              <td>{{exercise.exercises.name}}</td>
+              <td>{{exercise.numberOfSeries}}</td>
+              <td>{{exercise.numberOfRepetitions}}</td>
+              <td>{{exercise.weight}}</td>
+              <td><span style="color: darkblue">Usuń</span></td>
             </tr>
             </tbody>
           </table>
         </div>
       </div>
     </div>
-    <my-footer></my-footer>
-  </div>
+  <my-footer></my-footer>
+</div>
 </template>
-
 
 <script>
 import Footer from "./Footer";
@@ -58,63 +47,73 @@ import axios from "axios";
 import endpoint from "../endpoint.json";
 
 export default {
+  mounted() {
+    this.getWorkoutDaysToDetails();
+  },
+
   components: {
     'my-footer': Footer,
     'my-header': Header,
   },
-  data() {
+  data(){
     return {
-      allExercises: [],
+      workoutDays: [],
+      dataFromSession: JSON.parse(sessionStorage.getItem('loggedIn')),
+      exercises:[],
+
     }
   },
 
 
-  mounted() {
-    this.getExercises("Klatka");
-  },
+  methods:{
+    getWorkoutDaysToDetails() {
 
-  methods: {
-    changeRoute(route) {
-      this.$router.push(route).catch(error => {
-        if (error.name !== "NavigationDuplicated") {
-          throw error;
-        }
-      });
-    },
-    getExercises(name) {
-      axios.post(`${endpoint.url}/exercises/allByCategory?name=${name}`)
+
+      axios.post(`${endpoint.url}/myTraining/workoutDays`, this.dataFromSession)
           .then((response) => {
             if (response.status === 200) {
-              this.allExercises = response.data;
-            }
+              this.workoutDays = response.data;
 
+            }
           })
     },
+    getPlan(name){
+      var email = this.dataFromSession.email;
+      axios.post(`${endpoint.url}/planOfExercises/getPlan?trainingName=${name}&email=${email}`, )
+          .then((response)=>{
+            if(response.status===200){
+              this.exercises = response.data;
+
+            }
+          })
+    }
 
 
   }
 }
 </script>
+
 <style scoped>
 
-.exercise-content-div {
+.centre-div{
   min-height: 672px;
   display: flex;
   justify-content: space-around;
   align-items: center;
   flex-direction: row;
   background: #EBE8E8;
-
 }
-
 .category-menu {
   min-height: 500px;
+  max-height: 500px;
   min-width: 250px;
   background: #d3d3d3;
   border-radius: 9px;
   margin-left: 70px;
   flex-direction: column;
   text-align: center;
+  overflow-y: auto;
+
 }
 
 .category-menu .option {
@@ -122,6 +121,7 @@ export default {
   font-family: lex;
   font-size: 12px;
   border-bottom: 1px dotted black;
+
 }
 
 .category-menu .optionL {
@@ -152,14 +152,16 @@ export default {
   background: #d3d3d3;
   border-radius: 9px;
   align-self: center;
+  max-height: 500px;
+  overflow-y: auto;
 }
-
 .table {
   width: 100%;
   border-collapse: collapse;
   margin: 25px 0;
   font-family: lex;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+  max-width: 900px;
 }
 
 .table thead tr {
@@ -170,7 +172,8 @@ export default {
 
 .table th,
 .table td {
-  padding: 35px 25px;
+  padding: 15px 25px;
+  font-size: 13px;
 }
 
 .table tbody tr {
@@ -191,5 +194,3 @@ export default {
 }
 
 </style>
-
-
