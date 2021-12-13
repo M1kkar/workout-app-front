@@ -35,7 +35,7 @@
         </div>
       </div>
       <div class="my-popup" id="my-form">
-        <form class="form-container">
+        <div class="form-container">
           <h3>Wprowadź dane: </h3>
 
           <label>Data: </label>
@@ -45,11 +45,11 @@
           <h6>maxymalna długosc nazwy to 10 znaków</h6>
           <button v-on:click="sendForm()" class="register-button">Zapisz</button>
           <button v-on:click="closeForm()" class="register-button">Anuluj</button>
-        </form>
+        </div>
       </div>
       <div class="second-popup" id="my-second-form">
 
-        <form class="delete-form">
+        <div class="delete-form">
           <h3>Wybierz trening: </h3>
 
           <div class="custom-select">
@@ -62,11 +62,11 @@
 
           <button v-on:click="deleteTraining(selectedOption)" class="register-button">Usuń trening</button>
           <button v-on:click="closeDeleteForm()" class="register-button">Anuluj</button>
-        </form>
+        </div>
 
       </div>
       <div class="third-popup" id="my-third-popup">
-        <form class="select-popup">
+        <div class="select-popup">
           <h3> Dodaj cwiczenia do treningu </h3>
           <h3><span style="color:white;">{{this.workoutDays.trainingName}}</span></h3>
           <h3>Wybierz Cwiczenie i wpisz dane</h3>
@@ -84,7 +84,7 @@
           <button v-on:click="addExercise()" class="register-button">Dodaj Cwiczenie</button>
           <button v-on:click="closeAddPopup()" class="register-button">Anuluj</button>
 
-        </form>
+        </div>
       </div>
       <div class="div-with-instruction">
         <div class="instruction">
@@ -173,15 +173,16 @@ export default {
 
       this.$v.workoutToSaveForm.$touch();
       if (this.$v.workoutToSaveForm.$error) {
-        console.log("pola");
+        this.$swal("Ops..", "Wypełnij dane!" , "error");
       } else {
         axios.post(`${endpoint.url}/myTraining/addWorkoutDay`, workoutUserData)
             .then((response) => {
               if (response.status === 200) {
-                console.log("xd");
+                this.closeForm();
+                location.reload();
               }
             }).catch(() => {
-
+            this.$swal("Ops..", "Masz już trening o takiej nazwie!" , "error");
         })
 
       }
@@ -202,10 +203,11 @@ export default {
       axios.post(`${endpoint.url}/myTraining/deleteDay`, full)
           .then((response) => {
             if (response.status === 200) {
-              console.log("its works");
+              this.closeDeleteForm();
+              location.reload();
             }
           }).catch(() => {
-        console.log("pusto");
+        this.$swal("Ops..", "Musisz wybrać trening!", "error")
       })
     },
 
@@ -246,6 +248,7 @@ export default {
       popup.classList.remove('show');
     },
 
+    //TODO ppoprawić CSS do dodawania ćwiczeń.
     addExercise() {
         const full = {
         trainingName: this.workoutDays.trainingName,
@@ -254,13 +257,14 @@ export default {
         user: this.dataFromSession = JSON.parse(sessionStorage.getItem('loggedIn')),
       }
 
-      axios.post(`${endpoint.url}/exercises/addExercises`, full)
+      axios.post(`${endpoint.url}/planOfExercises/addExercises`, full)
       .then((response)=>{
         if(response.status===200){
-          console.log("its works")
+          this.closeAddPopup();
+          location.reload();
         }
       }).catch(()=>{
-        console.log("nie works");
+        this.$swal("Ops..", "Już dodałeś to ćwiczenie!", "error");
       })
 
     },

@@ -29,7 +29,7 @@
               <td>{{exercise.numberOfSeries}}</td>
               <td>{{exercise.numberOfRepetitions}}</td>
               <td>{{exercise.weight}}</td>
-              <td><span style="color: darkblue">Usuń</span></td>
+              <a v-on:click="deleteExercises(exercise.exercises, exercise.workoutDay)"><td><span style="color: darkblue">Usuń</span></td></a>
             </tr>
             </tbody>
           </table>
@@ -84,9 +84,26 @@ export default {
             if(response.status===200){
               this.exercises = response.data;
 
+
+            }
+          })
+    },
+
+    deleteExercises(exercises, workoutDay){
+
+     const fullObject = {
+       exercises: exercises,
+       workoutDay: workoutDay,
+     }
+
+      axios.post(`${endpoint.url}/planOfExercises/deleteExercise`, fullObject)
+          .then((response)=>{
+            if(response.status===200){
+              this.getPlan(fullObject.workoutDay.trainingName);
             }
           })
     }
+
 
 
   }
@@ -144,6 +161,10 @@ export default {
   background: #dddddd;
   border-bottom-left-radius: 9px;
   border-bottom-right-radius: 9px;
+}
+
+a{
+  cursor: pointer;
 }
 
 .exercises-div {
