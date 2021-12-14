@@ -3,35 +3,17 @@
     <div class="logo">
       <a v-on:click="changeRoute('/dashboard')"><h2><span style="color: #C1A65F">BEST</span> WORKOUT</h2></a>
     </div>
-<!--    <div class="header_menu">
-      <ul>
-
-        <a v-on:click="changeRoute('/myTraining')">
-          <li>Trening</li>
-          <ul class="dropdown">
-            <li><a href="/">Ćwiczenia</a></li>
-            <li><a href="/">Moje Treningi</a></li>
-            <li><a href="/">O treningu</a></li>
-          </ul>
-        </a>
-
-        <a v-on:click="changeRoute('/myDiet')">
-          <li>Dieta</li>
-        </a>
-
-        <a v-on:click="changeRoute('/myProfile')">
-          <li>Mój Profil</li>
-        </a>
-
-        <a v-on:click="logout">
-          <li ><img src="../images/logout1.png"/></li>
-        </a>
-      </ul>
-    </div>-->
-
     <div class="navbar">
       <a v-on:click="changeRoute('/myProfile')">Mój profil</a>
-      <a v-on:click="changeRoute('/myDiet')" >Dieta</a>
+<!--      <a v-on:click="changeRoute('/myDiet')" >Dieta</a>-->
+      <div class="dropdown">
+        <button class="dropbtn">Dieta
+        <i class="fa fa-caret-down"></i></button>
+        <div class="dropdown-content">
+          <a v-on:click="changeRoute('/myDiet')">Moja Dieta</a>
+          <a v-on:click="changeRoute('/addProduct')">Dodaj Produkt do Bazy</a>
+        </div>
+      </div>
       <div class="dropdown">
         <button class="dropbtn">Trening
           <i class="fa fa-caret-down"></i>
