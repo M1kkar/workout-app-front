@@ -68,7 +68,7 @@ export default {
         this.$swal("Ops..", "Musisz wypełnić wszystkie pola!", "error")
       } else {
 
-        axios.post(`${endpoint.url}/addProducts/add`, this.productForm)
+        axios.post(`${endpoint.url}/products/add`, this.productForm)
             .then((response) => {
               if (response.status === 200) {
                 this.$swal("", "Pomyślnie dodano produkt do bazy ! ", "success")
