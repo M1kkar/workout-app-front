@@ -20,10 +20,10 @@
             <input v-model="loginForm.email" type="text" class="login-input" placeholder="E-mail"/>
           </div>
           <div class="input2">
-            <input v-model="loginForm.password" type="password" class="login-input" placeholder="Password"/>
+            <input v-model="loginForm.password" type="password" class="login-input" placeholder="Hasło"/>
           </div>
 
-          <button v-on:click="login" class="log-button" type="button"> Log in</button>
+          <button v-on:click="login" class="log-button" type="button"> Zaloguj</button>
 
         </form>
 

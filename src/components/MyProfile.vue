@@ -9,9 +9,10 @@
           <input v-model="dataFromSession.surname" type="text" class="surname-input" disabled/>
         </div>
         <div class="name-surname-input-div">
-          <input v-on:input="log($event.target.value, $event.target.name)" type="password" class="password-input"
+          <input v-model="userDataForm.password" v-on:input="log($event.target.value, $event.target.name)"
+                 type="password" class="password-input"
                  placeholder="Hasło"/>
-          <input v-model="password1" type="password" class="password-confirm-input" placeholder="Hasło"/>
+          <input v-model="userDataForm.retype" type="password" class="password-confirm-input" placeholder="Powótrz Hasło"/>
         </div>
         <div class="change-button-div">
           <a v-on:click="changePassword(dataFromSession.email)">
@@ -28,13 +29,20 @@
           <img src="../images/bodyMeasurement.png"/>
         </div>
         <div class="body-measurement-form-div">
-          1 Wzrost<span style="color:#C1A65F">(cm):</span> <input v-model="measurementForm.height" type="text" class="name-input" placeholder="Wzrost"/>
-          2 Biceps<span style="color:#C1A65F">(cm):</span> <input v-model="measurementForm.biceps" type="text" class="name-input" placeholder="Biceps"/>
-          3 Klatka<span style="color:#C1A65F">(cm):</span> <input v-model="measurementForm.chest" type="text" class="name-input" placeholder="Klatka"/>
-          4 Talia<span style="color:#C1A65F">(cm):</span><input v-model="measurementForm.waist" type="text" class="name-input" placeholder="Talia"/>
-          5 Biodra<span style="color:#C1A65F">(cm):</span> <input v-model="measurementForm.hips" type="text" class="name-input" placeholder="Biodra"/>
-          6 Udo<span style="color:#C1A65F">(cm):</span> <input v-model="measurementForm.thigh" type="text" class="name-input" placeholder="Udo"/>
-          7 Waga<span style="color:#C1A65F">(kg):</span> <input v-model="measurementForm.weight" type="text" class="name-input" placeholder="Waga"/>
+          1 Wzrost<span style="color:#C1A65F">(cm):</span> <input v-model="measurementForm.height" type="number"
+                                                                  class="name-input" placeholder="Wzrost" min="0"/>
+          2 Biceps<span style="color:#C1A65F">(cm):</span> <input v-model="measurementForm.biceps" type="number"
+                                                                  class="name-input" placeholder="Biceps" min="0"/>
+          3 Klatka<span style="color:#C1A65F">(cm):</span> <input v-model="measurementForm.chest" type="number"
+                                                                  class="name-input" placeholder="Klatka" min="0"/>
+          4 Talia<span style="color:#C1A65F">(cm):</span><input v-model="measurementForm.waist" type="number"
+                                                                class="name-input" placeholder="Talia" min="0"/>
+          5 Biodra<span style="color:#C1A65F">(cm):</span> <input v-model="measurementForm.hips" type="number"
+                                                                  class="name-input" placeholder="Biodra" min="0"/>
+          6 Udo<span style="color:#C1A65F">(cm):</span> <input v-model="measurementForm.thigh" type="number"
+                                                               class="name-input" placeholder="Udo" min="0"/>
+          7 Waga<span style="color:#C1A65F">(kg):</span> <input v-model="measurementForm.weight" type="number"
+                                                                class="name-input" placeholder="Waga" min="0"/>
         </div>
 
       </div>
@@ -54,7 +62,7 @@ import Footer from "./Footer";
 import axios from "axios";
 import endpoint from "../endpoint.json";
 import Header from "./Header";
-import {required} from "vuelidate/lib/validators"
+import {minLength, required, sameAs} from "vuelidate/lib/validators"
 
 
 export default {
@@ -81,16 +89,18 @@ export default {
         password: ''
 
       },
+
+      retype: '',
+
       password1: '',
-      password: '',
       dataFromSession: [],
 
 
     }
   },
 
-  validations:{
-    measurementForm:{
+  validations: {
+    measurementForm: {
       biceps: {required},
       height: {required},
       chest: {required},
@@ -98,8 +108,12 @@ export default {
       hips: {required},
       thigh: {required},
       weight: {required}
-
+    },
+    userDataForm: {
+      password: {required, min: minLength(5)},
+      retype: {sameAsPassword: sameAs('password')}
     }
+
   },
 
   mounted() {
@@ -122,17 +136,16 @@ export default {
 
     updateBodyMeasurement() {
       this.$v.measurementForm.$touch();
-      if(this.$v.measurementForm.$error){
+      if (this.$v.measurementForm.$error) {
         this.$swal('Ups..', 'Upewnij się ze wypełniłeś wszystkie pola!', 'error')
-      }
-      else{
-      // console.log(this.measurementForm);
-      axios.post(`${endpoint.url}/myProfile/updateProfile/`, this.measurementForm)
-          .then((response) => {
-            if (response.status === 200) {
-              this.$swal('Udało się ..!', 'Pomiary zostały zaktualizowane', 'success')
-            }
-          })
+      } else {
+        // console.log(this.measurementForm);
+        axios.post(`${endpoint.url}/myProfile/updateProfile/`, this.measurementForm)
+            .then((response) => {
+              if (response.status === 200) {
+                this.$swal('Udało się ..!', 'Pomiary zostały zaktualizowane', 'success')
+              }
+            })
       }
     },
 
@@ -145,13 +158,19 @@ export default {
     },
 
     changePassword(email) {
-      axios.put(`${endpoint.url}/myProfile/${email}/${this.userDataForm.password}`)
-          .then((response) => {
-            if (response.status === 200) {
-              this.$swal('Udało się..', 'Hasło zostało zmienione', 'success')
-            }
-          })
+      this.$v.userDataForm.$touch();
+      if (this.$v.userDataForm.$error) {
+        this.$swal('Ups..', 'Hasła muszą być zgodne', 'error')
+      } else {
+        axios.put(`${endpoint.url}/myProfile/${email}/${this.userDataForm.password}`)
+            .then((response) => {
+              if (response.status === 200) {
+                this.$swal('Udało się..', 'Hasło zostało zmienione', 'success')
+              }
+            })
+      }
     },
+
     log(item) {
       this.userDataForm.password = item;
     }
@@ -162,13 +181,15 @@ export default {
 
 <style>
 
-.swal2-title{
+.swal2-title {
   font-family: 'lex' !important;
 }
-.swal2-html-container{
+
+.swal2-html-container {
   font-family: 'lex' !important;
   font-size: 12px !important;
 }
+
 .user-data-content-div {
   min-height: 672px;
   display: flex;

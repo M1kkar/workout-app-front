@@ -15,10 +15,10 @@
       <div class="reg-form">
         <form>
           <input v-model="registerForm.email" class="inputs" type="text" placeholder="E-Mail">
-          <input v-model="registerForm.password" class="inputs" type="password" placeholder="Password">
-          <input v-model="registerForm.retype" class="inputs" type="password" placeholder="Confirm Password">
-          <input v-model="registerForm.name" class="inputs" type="text" placeholder="Name">
-          <input v-model="registerForm.surname" class="inputs" type="text" placeholder="Surname">
+          <input v-model="registerForm.password" class="inputs" type="password" placeholder="Hasło">
+          <input v-model="registerForm.retype" class="inputs" type="password" placeholder="Powtórz hasło">
+          <input v-model="registerForm.name" class="inputs" type="text" placeholder="Imię">
+          <input v-model="registerForm.surname" class="inputs" type="text" placeholder="Nazwisko">
         </form>
         <button v-on:click="register" class="register-button" type="button">Stwórz konto</button>
       </div>
@@ -110,8 +110,6 @@ export default {
 .headerMain {
   background: #ffffff;
   min-height: 64px;
-/*  border-bottom: 1px dotted black;
-  border-top: 1px dotted black;*/
   display: flex;
   flex-direction: row;
   justify-content: space-between;

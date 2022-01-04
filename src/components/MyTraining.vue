@@ -18,7 +18,9 @@
             <tbody>
             <tr v-for="(training,i) in workoutDays" v-bind:key="i">
               <td>{{ i + 1 }}</td>
-              <a v-on:click="openAddPopup(training.trainingName)"><td>{{ training.trainingName }}</td></a>
+              <a v-on:click="openAddPopup(training.trainingName)">
+                <td>{{ training.trainingName }}</td>
+              </a>
               <td>{{ training.dateOfTraining }}</td>
             </tr>
 
@@ -30,8 +32,12 @@
           <h5 v-on:click="changeRoute('/moreDetails')">Więcej szczegółów</h5>
         </div>
         <div class="buttons">
-          <div><button v-on:click="openForm()" class="register-button">DODAJ TRENING</button></div>
-          <div><button v-on:click="openDeleteForm()" class="register-button"> USUŃ TRENING</button></div>
+          <div>
+            <button v-on:click="openForm()" class="register-button">DODAJ TRENING</button>
+          </div>
+          <div>
+            <button v-on:click="openDeleteForm()" class="register-button"> USUŃ TRENING</button>
+          </div>
         </div>
       </div>
       <div class="my-popup" id="my-form">
@@ -68,16 +74,17 @@
       <div class="third-popup" id="my-third-popup">
         <div class="select-popup">
           <h3> Dodaj cwiczenia do treningu </h3>
-          <h3><span style="color:white;">{{this.workoutDays.trainingName}}</span></h3>
+          <h3><span style="color:white;">{{ this.workoutDays.trainingName }}</span></h3>
           <h3>Wybierz Cwiczenie i wpisz dane</h3>
           <div class="custom-select">
             <select name="exercises" v-model="exerciseName">
               <option v-for="(exercise, i) in allNames" v-bind:key="i">
-                {{exercise}}
+                {{ exercise }}
               </option>
             </select>
-            <div class="ex-inputs">Liczba serii: <input  v-model="dataToAddExercise.numberOfSeries"  type="text"></div>
-            <div class="ex-inputs">Liczba powtórzeń: <input v-model="dataToAddExercise.numberOfRepetitions" type="text"></div>
+            <div class="ex-inputs">Liczba serii: <input v-model="dataToAddExercise.numberOfSeries" type="text"></div>
+            <div class="ex-inputs">Powtórzenia: <input v-model="dataToAddExercise.numberOfRepetitions" type="text">
+            </div>
             <div class="ex-inputs">Obciążenie: <input v-model="dataToAddExercise.weight" type="text"></div>
           </div>
 
@@ -143,6 +150,12 @@ export default {
     workoutToSaveForm: {
       trainingName: {required, max: maxLength(10)},
       dateOfTraining: {required},
+    },
+
+    dataToAddExercise: {
+      numberOfSeries: {required},
+      numberOfRepetitions: {required},
+      weight: {required},
     }
 
   },
@@ -173,7 +186,7 @@ export default {
 
       this.$v.workoutToSaveForm.$touch();
       if (this.$v.workoutToSaveForm.$error) {
-        this.$swal("Ops..", "Wypełnij dane!" , "error");
+        this.$swal("Ops..", "Wypełnij dane!", "error");
       } else {
         axios.post(`${endpoint.url}/myTraining/addWorkoutDay`, workoutUserData)
             .then((response) => {
@@ -182,7 +195,7 @@ export default {
                 location.reload();
               }
             }).catch(() => {
-            this.$swal("Ops..", "Masz już trening o takiej nazwie!" , "error");
+          this.$swal("Ops..", "Masz już trening o takiej nazwie!", "error");
         })
 
       }
@@ -225,7 +238,6 @@ export default {
 
     getAllExercises(trainingName) {
       this.workoutDays.trainingName = trainingName;
-      console.log(trainingName);
       axios.post(`${endpoint.url}/exercises/all`)
           .then((response) => {
             if (response.status === 200) {
@@ -250,22 +262,28 @@ export default {
 
     //TODO ppoprawić CSS do dodawania ćwiczeń.
     addExercise() {
+      this.$v.dataToAddExercise.$touch();
+      if (this.$v.dataToAddExercise.$error) {
+        this.$swal('Ups..', 'Wypełnij wszystkie dane', 'error')
+      } else {
         const full = {
-        trainingName: this.workoutDays.trainingName,
-        exerciseName: this.exerciseName,
-        planOfExercises: this.dataToAddExercise,
-        user: this.dataFromSession = JSON.parse(sessionStorage.getItem('loggedIn')),
-      }
-
-      axios.post(`${endpoint.url}/planOfExercises/addExercises`, full)
-      .then((response)=>{
-        if(response.status===200){
-          this.closeAddPopup();
-          location.reload();
+          trainingName: this.workoutDays.trainingName,
+          exerciseName: this.exerciseName,
+          planOfExercises: this.dataToAddExercise,
+          user: this.dataFromSession = JSON.parse(sessionStorage.getItem('loggedIn')),
         }
-      }).catch(()=>{
-        this.$swal("Ops..", "Już dodałeś to ćwiczenie!", "error");
-      })
+
+        axios.post(`${endpoint.url}/planOfExercises/addExercises`, full)
+            .then((response) => {
+              if (response.status === 200) {
+                this.closeAddPopup();
+                location.reload();
+              }
+            }).catch(() => {
+          this.$swal("Ops..", "Już dodałeś to ćwiczenie!", "error");
+        })
+
+      }
 
     },
     changeRoute(route) {
@@ -321,11 +339,11 @@ export default {
   overflow-y: auto;
 }
 
-.more-inf{
+.more-inf {
   text-align: center;
 }
 
-.more-inf h5{
+.more-inf h5 {
   cursor: pointer;
   text-decoration: underline;
   color: #9a8d0f;
@@ -391,6 +409,9 @@ export default {
   opacity: 0;
   transition: all 0.3s ease-in-out;
   transform: scale(1.3);
+  -webkit-box-shadow: 0px 0px 45px 6px rgba(66, 68, 90, 1);
+  -moz-box-shadow: 0px 0px 45px 6px rgba(66, 68, 90, 1);
+  box-shadow: 0px 0px 45px 6px rgba(66, 68, 90, 1);
 }
 
 .form-container {
@@ -416,6 +437,7 @@ export default {
   transition: all 0.3s ease-in-out;
   transform: scale(1.3);
 
+
 }
 
 .delete-form {
@@ -423,11 +445,15 @@ export default {
   padding: 10px;
   background-color: white;
   text-align: center;
+  -webkit-box-shadow: 0px 0px 45px 6px rgba(66, 68, 90, 1);
+  -moz-box-shadow: 0px 0px 45px 6px rgba(66, 68, 90, 1);
+  box-shadow: 0px 0px 45px 6px rgba(66, 68, 90, 1);
 }
 
-.custom-select{
+.custom-select {
   padding: 25px;
 }
+
 .custom-select select {
   width: 200px;
   font-family: lex;
@@ -438,22 +464,36 @@ export default {
   width: 600px;
   visibility: hidden;
   position: fixed;
-  border: 3px solid black;
   margin-top: 150px;
-  background-color: #a2a2a2;
-  opacity: 0;
+  background: rgba(0, 0, 0, 0.7);
+  opacity: 0.2;
   transition: all 0.3s ease-in-out;
   transform: scale(1.3);
   text-align: center;
-
+  -webkit-box-shadow: 0px 0px 45px 6px rgba(66, 68, 90, 1);
+  -moz-box-shadow: 0px 0px 45px 6px rgba(66, 68, 90, 1);
+  box-shadow: 0px 0px 45px 6px rgba(66, 68, 90, 1);
 }
 
-.third-popup select{
+.third-popup select {
   width: 430px;
 }
 
+.select-popup button {
+  margin-bottom: 15px;
+}
 
-.show{
+.select-popup input {
+  padding: 4px 20px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  text-align: center;
+  box-sizing: border-box;
+  margin-top: 10px;
+}
+
+
+.show {
   visibility: visible;
   opacity: 1;
   transform: scale(1);

@@ -1,7 +1,9 @@
 <template>
   <div class="flexbox-container">
+
     <my-header/>
     <div class="exercise-content-div">
+
       <div class="category-menu">
         <nav class="left-side-menu">
           <a v-on:click="getExercises('Klatka')">
@@ -39,15 +41,33 @@
             <tbody>
             <tr v-for="(exercise,i) in allExercises" v-bind:key="i" class="active-row">
               <td>{{ i + 1 }}</td>
-              <td>{{ exercise }}</td>
+              <td><a style="cursor:pointer;" v-on:click = "testMethod(exercise)" >{{ exercise }}</a></td>
             </tr>
             </tbody>
           </table>
         </div>
+        <div style="width: 550px; height: 350px;" id="video-div" class="video-popup">
+          <iframe id="video-id" src="" height="315px" width="550px"
+                  title="YouTube video player"
+                  frameborder="0"
+                  allow="accelerometer;
+                autoplay;
+                clipboard-write;
+                encrypted-media;
+                gyroscope;
+                picture-in-picture" allowfullscreen>
+          </iframe>
+          <button v-on:click="closePopup()" class="register-button">Zamknij</button>
+        </div>
       </div>
     </div>
+
     <my-footer></my-footer>
+
+
   </div>
+
+
 </template>
 
 
@@ -65,6 +85,7 @@ export default {
   data() {
     return {
       allExercises: [],
+      links:[],
     }
   },
 
@@ -89,6 +110,24 @@ export default {
             }
 
           })
+    },
+
+    testMethod(name){
+      axios.get(`${endpoint.url}/exercises/getLink?name=${name}`)
+      .then((response)=>{
+        if(response.status===200){
+          this.links = response.data;
+          document.getElementById("video-id").src = this.links[0];
+          var popup = document.getElementById("video-div");
+          popup.classList.add('show');
+
+        }
+      })
+    },
+    closePopup() {
+      var popup = document.getElementById("video-div")
+      popup.classList.remove('show');
+      document.getElementById("video-id").src = "";
     },
 
 
@@ -188,6 +227,24 @@ export default {
 .table tbody tr.active-row {
   font-weight: bold;
   color: black;
+}
+
+.video-popup{
+  position: fixed;
+  visibility: hidden;
+  transition: all 0.3s ease-in-out;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.7);
+  transform: scale(1.3);
+  -webkit-box-shadow: 0 0 45px 6px rgba(66, 68, 90, 1);
+  -moz-box-shadow: 0 0 45px 6px rgba(66, 68, 90, 1);
+  box-shadow: 0 0 45px 6px rgba(66, 68, 90, 1);
+  margin-top: -500px;
+}
+.show{
+  visibility: visible;
+  opacity: 1;
+  transform: scale(1);
 }
 
 </style>

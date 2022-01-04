@@ -62,7 +62,7 @@
         <p>JEŚLI MASZ JAKIEŚ PYTANIA ODEZWIJ SIĘ</p>
       </div>
       <div class="e-mail">
-        <p>example@example.com</p>
+        <p>bestworkout@email.com</p>
       </div>
     </div>
     <my-footer></my-footer>

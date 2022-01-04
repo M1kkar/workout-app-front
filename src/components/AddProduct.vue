@@ -15,9 +15,9 @@
         </div>
         <div class="all-inputs">
           <div class="input"><input v-model="productForm.productName"  type="text"></div>
-          <div class="input"><input v-model="productForm.protein" type="text"></div>
-          <div class="input"><input v-model="productForm.fat" type="text"></div>
-          <div class="input"><input v-model="productForm.carbohydrate" type="text"></div>
+          <div class="input"><input v-model="productForm.protein" type="number" min="0"></div>
+          <div class="input"><input v-model="productForm.fat" type="number" min="0"></div>
+          <div class="input"><input v-model="productForm.carbohydrate" type="number" min="0"></div>
         </div>
       </div>
       <a v-on:click="addProduct"><button class="login-button">Dodaj</button></a>

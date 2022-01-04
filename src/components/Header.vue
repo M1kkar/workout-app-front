@@ -21,7 +21,6 @@
         <div class="dropdown-content">
           <a v-on:click="changeRoute('/myTraining')" >Moje Treningi</a>
           <a v-on:click="changeRoute('/allExercises')">Ćwiczenia</a>
-          <a v-on:click="changeRoute('/aboutTraining')">O Treningu</a>
         </div>
       </div>
       <a v-on:click="logout">

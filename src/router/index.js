@@ -5,6 +5,7 @@ import HomePage from "../components/HomePage";
 import Login from "../components/Login";
 import Register from "../components/Register";
 
+
 Vue.use(VueRouter);
 Vue.component('my-home-page', HomePage);
 Vue.component('my-footer', Footer);
@@ -25,6 +26,8 @@ const notLoggedInGuard = (to, from, next) => {
         next();
     }
 };
+
+
 
 const routes = [
     {
@@ -74,11 +77,6 @@ const routes = [
         name: '/allExercises',
         component:() =>import('../components/Exercises'),
         beforeEnter: loggedInGuard,
-    },
-    {
-        path: '/aboutTraining',
-        name: '/aboutTraining',
-        component:() =>import('../components/AboutTraining'),
     },
     {
         path: '/moreDetails',

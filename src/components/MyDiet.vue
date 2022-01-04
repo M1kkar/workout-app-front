@@ -4,10 +4,10 @@
     <div class="diet-container">
       <div class="div-with-inputs">
         <div class="inputs-div">
-          <div class="input">Białka(g): <input v-model="diet.protein" type="text"></div>
-          <div class="input">Węglowodany(g): <input v-model="diet.carbohydrates" type="text"></div>
-          <div class="input">Tłuszcze(g): <input v-model="diet.fat" type="text"></div>
-          <div class="input">Kalorie(Kcal): <input v-model="diet.kcal" type="text"></div>
+          <div class="input">Białka(g): <input v-model="diet.protein" type="number" min="0"></div>
+          <div class="input">Węglowodany(g): <input v-model="diet.carbohydrates" type="number" min="0"></div>
+          <div class="input">Tłuszcze(g): <input v-model="diet.fat" type="number" min="0"></div>
+          <div class="input">Kalorie(Kcal): <input v-model="diet.kcal" type="number" min="0"></div>
           <a v-on:click="updateDiet">
             <button class="login-button"><p>Aktualizuj</p></button>
           </a>
@@ -64,16 +64,64 @@
 
           </div>
           <div class="all-inputs">
-            <div class="input"><input v-model="productsInDay.productSize" type="text"></div>
+            <div class="input"><input v-model="productsInDay.productSize" type="number" min="0"></div>
 
           </div>
         </div>
-        <div class="button"><a v-on:click="addProductToDay"><button class="login-button"><span style="font-size: 12px"> Dodaj </span></button></a></div>
+        <div class="button"><a v-on:click="addProductToDay">
+          <button class="login-button"><span style="font-size: 12px"> Dodaj </span></button>
+        </a></div>
       </div>
 
 
       <div class="products-in-day">
+        <div class="date-input"><input class="input-date" type="date" v-model="date"/></div>
+        <div class="button">
+          <button class="login-button" v-on:click="getProductsFromDay()"> wyswietl</button>
+        </div>
+        <div class="products-table">
+          <div class="food-portion" style="font-family: Arial; font-weight: bold; max-height: 250px; overflow-y: auto">
+            <table class="table">
+              <thead>
+              <tr>
+                <th>Produkt</th>
+                <th>Porcja</th>
+                <th>Kcal</th>
+                <th>Białko</th>
+                <th>Tłuszcz</th>
+                <th>Węglowodany</th>
+                <th></th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr v-for="(allproducts,i) in allProductsInDay" v-bind:key="i" class="active-row">
+                <td>{{ allproducts.products.productName }}</td>
+                <td>{{ allproducts.productSize }}g</td>
+                <td>{{ allproducts.kcalPortion }}</td>
+                <td>{{ allproducts.proteinPortion }}g</td>
+                <td>{{ allproducts.fatPortion }}g</td>
+                <td>{{ allproducts.carbohydratePortion }}g</td>
+                <td>
+                  <a style="color: blue; cursor:pointer; text-decoration: underline"
+                     v-on:click="deleteFromDay(allproducts.id)">Usuń</a>
+                </td>
+              </tr>
+              <tr>
+                <td>Suma:</td>
+                <td></td>
+                <td>{{ sumOfAll.kcal }}/{{ diet.kcal }}</td>
+                <td>{{ sumOfAll.protein }}/{{ diet.protein }}</td>
+                <td>{{ sumOfAll.fat }}/{{ diet.fat }}</td>
+                <td>{{ sumOfAll.carbohydrate }}/{{ diet.carbohydrates }}</td>
+                <td></td>
 
+              </tr>
+              </tbody>
+
+            </table>
+          </div>
+
+        </div>
       </div>
     </div>
     <my-footer></my-footer>
@@ -95,15 +143,19 @@ export default {
 
   data() {
     return {
+      dataFromSession: JSON.parse(sessionStorage.getItem('loggedIn')),
       diet: [],
       allProducts: [],
+      date: '',
+      allProductsInDay: [],
+      sumOfAll: [],
 
       searchQuery: '',
 
       productsInDay: {
         products: '',
         productSize: '',
-        diet:[],
+        diet: [],
       },
 
       isVisible: false,
@@ -114,6 +166,7 @@ export default {
   components: {
     'my-footer': Footer,
     'my-header': Header,
+
   },
 
   computed: {
@@ -139,9 +192,7 @@ export default {
       });
 
     },
-
     getDiet() {
-      this.dataFromSession = JSON.parse(sessionStorage.getItem('loggedIn'));
 
       axios.get(`${endpoint.url}/myDiet/getDiet/${this.dataFromSession.email}`)
           .then((response) => {
@@ -168,31 +219,72 @@ export default {
           .then((response) => {
             if (response.status === 200) {
               this.allProducts = response.data;
-              console.log(this.allProducts);
+
             }
           })
     },
 
     addProductToDay() {
+
+      if(!this.productsInDay.products){
+        this.$swal('Najpierw wybierz produkt', '', 'error')
+      } else{
+
       axios.post(`${endpoint.url}/products/addToDay`, this.productsInDay)
-      .then((response)=>{
-        if(response.status === 200){
-          console.log(this.productsInDay);
-        }
-      })
+          .then((response) => {
+            if (response.status === 200) {
+              this.getProductsFromDay();
+            }
+          })
+      }
+    },
+
+    getProductsFromDay() {
+      let date;
+      date = this.date;
+      //TODO trzeba ustawić defaultowo dat dzisiejszą.
+      axios.get(`${endpoint.url}/products/getAllProductsFromDay/${date}/${this.dataFromSession.email}`)
+          .then((response) => {
+            if (response.status === 200) {
+              this.allProductsInDay = response.data;
+              this.getSumOfAll();
+            }
+          })
+    },
+
+    getSumOfAll() {
+      let date;
+      date = this.date;
+      axios.get(`${endpoint.url}/myDiet/getSumOfAll/${date}/${this.dataFromSession.email}`)
+          .then((response) => {
+            if (response.status === 200) {
+              this.sumOfAll = response.data;
+            }
+          })
+    },
+
+    deleteFromDay(id) {
+      axios.delete(`${endpoint.url}/products/deleteFromDay/${id}`)
+          .then((response) => {
+            if (response.status === 200) {
+              this.getProductsFromDay();
+            }
+          })
     },
 
 
     selectItem(products) {
       this.productsInDay.products = products;
       this.isVisible = false;
-    }
+    },
 
 
   }
 
 
 }
+
+
 </script>
 
 <style scoped>
@@ -209,14 +301,12 @@ export default {
   flex-direction: row;
   text-align: center;
   justify-content: space-around;
-
 }
 
 .div-with-inputs {
   display: flex;
   min-height: 672px;
   margin-left: 150px;
-
 }
 
 .inputs-div {
@@ -250,7 +340,7 @@ export default {
   border: 2px solid #ddd;
   border-radius: 8px;
   text-align: center;
-  max-width: 40px;
+  max-width: 50px;
 }
 
 .div-with-inf {
@@ -271,7 +361,6 @@ export default {
   flex-direction: row;
   text-align: center;
   justify-content: space-around;
-
 }
 
 .add-products-container .add-products-form-div {
@@ -287,11 +376,15 @@ export default {
   min-height: 400px;
   min-width: 450px;
   display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 150px;
+
 }
 
 .custom-select {
   padding: 25px;
-
 }
 
 .custom-select select {
@@ -326,6 +419,7 @@ export default {
   justify-content: space-between;
   align-items: center;
   font-size: 16px;
+  width: 400px;
 }
 
 .dropdown-popover {
@@ -354,7 +448,6 @@ export default {
   border: 2px solid lightgrey;
   border-radius: 8px;
   padding-left: 5px;
-
 }
 
 .options {
@@ -415,12 +508,71 @@ export default {
   padding: 2px;
 }
 
-.button{
+.button {
   padding: 10px;
-
 }
-.button .login-button{
+
+.button .login-button {
   min-width: 100px;
 }
+
+.date-input {
+  max-height: 45px;
+}
+
+.date-input .input-date {
+  margin-right: auto;
+  margin-left: auto;
+  padding: 10px 60px;
+  border-radius: 8px;
+  border: 1px solid lightgrey;
+}
+
+.products-table {
+  min-height: 400px;
+  min-width: 250px;
+  padding: 10px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 25px 0;
+  font-family: Arial;
+  font-weight: bold;
+  font-size: 14px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+  max-width: 800px;
+}
+
+.table thead tr {
+  background-color: #ababab;
+  color: #FFFFFF;
+
+}
+
+.table th,
+.table td {
+  padding: 5px 25px;
+  text-align: center;
+}
+
+.table tbody tr {
+  border-bottom: 1px solid #C1A65F;
+}
+
+.table tbody tr:nth-of-type(even) {
+  background-color: #f3f3f3;
+}
+
+.table tbody tr:last-of-type {
+  border-bottom: 2px solid black;
+}
+
+.table tbody tr.active-row {
+  font-weight: bold;
+  color: black;
+}
+
 
 </style>
